@@ -164,15 +164,11 @@ Step 3: Generate Auth Scaffolding
 
 here, we will use laravel ui for generating auth scaffolding, so let's run bellow command:
 
-composer require laravel/ui --dev
-
-after installing composer package, run bellow command:
-
-php artisan ui bootstrap --auth
-
-now, run npm install commands:
-
-npm i && npm run dev
+php artisan breeze:install
+ 
+php artisan migrate
+npm install
+npm run dev
 
 Step 4: Create Middleware
 
