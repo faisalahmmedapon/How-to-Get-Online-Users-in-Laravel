@@ -1,66 +1,505 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+Step 1: Install Laravel
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+first of all we need to get fresh Laravel 8 version application using bellow command, So open your terminal OR command prompt and run bellow command:
 
-## About Laravel
+composer create-project --prefer-dist laravel/laravel blog
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Step 2: Add New Column to Users Table
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+here, we will create new migration for adding "last_seen" column:
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+php artisan make:migration add_new_column_last_seen
 
-## Learning Laravel
+database/migrations/2021_07_12_032305_add_new_column_last_seen.php
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+<?php
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+  
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+use Illuminate\Database\Migrations\Migration;
 
-## Laravel Sponsors
+use Illuminate\Database\Schema\Blueprint;
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+use Illuminate\Support\Facades\Schema;
 
-### Premium Partners
+  
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+class AddNewColumnLastSeen extends Migration
 
-## Contributing
+{
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+    /**
 
-## Code of Conduct
+     * Run the migrations.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+     *
 
-## Security Vulnerabilities
+     * @return void
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+     */
 
-## License
+    public function up()
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+    {
+
+        Schema::table('users', function(Blueprint $table){
+
+            $table->timestamp('last_seen')->nullable();
+
+        });
+
+    } 
+
+  
+
+    /**
+
+     * Reverse the migrations.
+
+     *
+
+     * @return void
+
+     */
+
+    public function down()
+
+    {
+
+          
+
+    }
+
+}
+
+now let's run migration command:
+
+php artisan migrate
+
+now, just add last_seen column on user model as like bellow:
+
+app/Models/User.php
+
+<?php
+
+  
+
+namespace App\Models;
+
+  
+
+use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
+use Illuminate\Foundation\Auth\User as Authenticatable;
+
+use Illuminate\Notifications\Notifiable;
+
+  
+
+class User extends Authenticatable
+
+{
+
+    use HasFactory, Notifiable;
+
+    /**
+
+     * The attributes that are mass assignable.
+
+     *
+
+     * @var array
+
+     */
+
+    protected $fillable = [
+
+        'name', 'email', 'password', 'last_seen'
+
+    ];
+
+  
+
+    /**
+
+     * The attributes that should be hidden for arrays.
+
+     *
+
+     * @var array
+
+     */
+
+    protected $hidden = [
+
+        'password', 'remember_token',
+
+    ];
+
+  
+
+    /**
+
+     * The attributes that should be cast to native types.
+
+     *
+
+     * @var array
+
+     */
+
+    protected $casts = [
+
+        'email_verified_at' => 'datetime',
+
+    ];
+
+}
+
+Read Also: Laravel 8 Queue Step by Step Tutorial Example
+
+Step 3: Generate Auth Scaffolding
+
+here, we will use laravel ui for generating auth scaffolding, so let's run bellow command:
+
+composer require laravel/ui --dev
+
+after installing composer package, run bellow command:
+
+php artisan ui bootstrap --auth
+
+now, run npm install commands:
+
+npm i && npm run dev
+
+Step 4: Create Middleware
+
+here, we will create UserActivity for update last seen time and add online status, let's run bellow command:
+
+php artisan make:middleware UserActivity
+
+now, update middleware code as bellow:
+
+app/Http/Middleware/UserActivity.php
+
+<?php
+
+  
+
+namespace App\Http\Middleware;
+
+  
+
+use Closure;
+
+use Illuminate\Http\Request;
+
+use Auth;
+
+use Cache;
+
+use App\Models\User;
+
+  
+
+class UserActivity
+
+{
+
+    /**
+
+     * Handle an incoming request.
+
+     *
+
+     * @param  \Illuminate\Http\Request  $request
+
+     * @param  \Closure  $next
+
+     * @return mixed
+
+     */
+
+    public function handle(Request $request, Closure $next)
+
+    {
+
+        if (Auth::check()) {
+
+            $expiresAt = now()->addMinutes(2); /* keep online for 2 min */
+
+            Cache::put('user-is-online-' . Auth::user()->id, true, $expiresAt);
+
+  
+
+            /* last seen */
+
+            User::where('id', Auth::user()->id)->update(['last_seen' => now()]);
+
+        }
+
+  
+
+        return $next($request);
+
+    }
+
+}
+
+now register, this middleware to kernel file:
+
+app/Http/Kernel.php
+
+<?php
+
+  
+
+namespace App\Http;
+
+  
+
+use Illuminate\Foundation\Http\Kernel as HttpKernel;
+
+  
+
+class Kernel extends HttpKernel
+
+{
+
+    ...........
+
+    protected $middlewareGroups = [
+
+        'web' => [
+
+            \App\Http\Middleware\EncryptCookies::class,
+
+            \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
+
+            \Illuminate\Session\Middleware\StartSession::class,
+
+            \Illuminate\View\Middleware\ShareErrorsFromSession::class,
+
+            \App\Http\Middleware\VerifyCsrfToken::class,
+
+            \Illuminate\Routing\Middleware\SubstituteBindings::class,
+
+            \App\Http\Middleware\RestrictIpAddressMiddleware::class,
+
+            \App\Http\Middleware\UserActivity::class,
+
+        ],
+
+  
+
+        'api' => [
+
+            'throttle:api',
+
+            \Illuminate\Routing\Middleware\SubstituteBindings::class,
+
+        ],
+
+    ];
+
+    ...........
+
+}
+
+Step 5: Create Route
+
+In this is step we need to create some routes for display online users function.
+
+routes/web.php
+
+<?php
+
+  
+
+use Illuminate\Support\Facades\Route;
+
+  
+
+use App\Http\Controllers\UserController;
+
+  
+
+/*
+
+|--------------------------------------------------------------------------
+
+| Web Routes
+
+|--------------------------------------------------------------------------
+
+|
+
+| Here is where you can register web routes for your application. These
+
+| routes are loaded by the RouteServiceProvider within a group which
+
+| contains the "web" middleware group. Now create something great!
+
+|
+
+*/
+
+Route::get('/', function () {
+
+    return view('welcome');
+
+});
+
+  
+
+Auth::routes();
+
+  
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+    
+
+Route::get('online-user', [UserController::class, 'index']);
+
+Step 6: Create Controller
+
+in this step, we need to create UserController and add following code on that file:
+
+app/Http/Controllers/UserController.php
+
+<?php
+
+  
+
+namespace App\Http\Controllers;
+
+  
+
+use Illuminate\Http\Request;
+
+use App\Models\User;
+
+  
+
+class UserController extends Controller
+
+{
+
+    /**
+
+     * Display a listing of the resource.
+
+     *
+
+     * @return \Illuminate\Http\Response
+
+     */
+
+    public function index(Request $request)
+
+    {
+
+        $users = User::select("*")
+
+                        ->whereNotNull('last_seen')
+
+                        ->orderBy('last_seen', 'DESC')
+
+                        ->paginate(10);
+
+          
+
+        return view('users', compact('users'));
+
+    }
+
+}
+
+Step 7: Create Blade Files
+
+here, we need to create blade files for users. so let's create one by one files:
+
+resources/views/users.blade.php
+
+@extends('layouts.app')
+
+  
+
+@section('content')
+
+<div class="container">
+
+    <h1>Laravel Display Online Users - ItSolutionStuff.com</h1>
+
+  
+
+    <table class="table table-bordered data-table">
+
+        <thead>
+
+            <tr>
+
+                <th>No</th>
+
+                <th>Name</th>
+
+                <th>Email</th>
+
+                <th>Last Seen</th>
+
+                <th>Status</th>
+
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            @foreach($users as $user)
+
+                <tr>
+
+                    <td>{{ $user->id }}</td>
+
+                    <td>{{ $user->name }}</td>
+
+                    <td>{{ $user->email }}</td>
+
+                    <td>
+
+                        {{ Carbon\Carbon::parse($user->last_seen)->diffForHumans() }}
+
+                    </td>
+
+                    <td>
+
+                        @if(Cache::has('user-is-online-' . $user->id))
+
+                            <span class="text-success">Online</span>
+
+                        @else
+
+                            <span class="text-secondary">Offline</span>
+
+                        @endif
+
+                    </td>
+
+                </tr>
+
+            @endforeach
+
+        </tbody>
+
+    </table>
+
+</div>
+
+@endsection
+
+Now we are ready to run our example and login with user. so run bellow command so quick run:
+
+php artisan serve
