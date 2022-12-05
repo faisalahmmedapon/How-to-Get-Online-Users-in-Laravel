@@ -432,10 +432,6 @@ resources/views/users.blade.php
 
 <div class="container">
 
-    <h1>Laravel Display Online Users - ItSolutionStuff.com</h1>
-
-  
-
     <table class="table table-bordered data-table">
 
         <thead>
