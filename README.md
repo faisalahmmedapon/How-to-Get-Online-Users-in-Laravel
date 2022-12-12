@@ -1,4 +1,4 @@
-Step 1: Install Laravel
+<p> Step 1: Install Laravel
 
 first of all we need to get fresh Laravel 8 version application using bellow command, So open your terminal OR command prompt and run bellow command:
 
@@ -495,3 +495,4 @@ resources/views/users.blade.php
 Now we are ready to run our example and login with user. so run bellow command so quick run:
 
 php artisan serve
+</p>
